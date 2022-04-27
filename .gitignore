@@ -1,0 +1,8 @@
+/bin
+/obj
+/.vscode
+
+.env
+
+/*.json
+.fake
