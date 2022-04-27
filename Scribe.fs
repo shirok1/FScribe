@@ -79,6 +79,7 @@ module Storage =
     let RecordPath = "records.json"
 
     type RecordStorage = IDictionary<uint, list<IScribeRecord>>
+    type PlainRecordStorage = IDictionary<uint, seq<PlainScribeRecord>>
 
     let mutable private _records: RecordStorage = dict []
 
@@ -90,7 +91,7 @@ module Storage =
 
         _records <-
             reader.ReadToEnd()
-            |> JsonConvert.DeserializeObject<RecordStorage>
+            |> JsonConvert.DeserializeObject<PlainRecordStorage>
             |> dictMap (Seq.cast >> Seq.toList)
 
         printfn "Loaded %d records." (_records.Values |> Seq.sumBy List.length)
