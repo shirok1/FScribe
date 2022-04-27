@@ -45,7 +45,7 @@ type ScribeRecord(msg: GroupMessageReceiver) =
     let msgId =
         maybeSource
         |> Option.map (fun s -> s.MessageId)
-        |> Option.defaultValue (DateTime.Now.ToString())
+        |> Option.defaultWith timestamp.ToString
 
     let lazyMarkdown =
         let cst = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time")
