@@ -93,7 +93,7 @@ module Storage =
             |> JsonConvert.DeserializeObject<RecordStorage>
             |> dictMap (Seq.cast >> Seq.toList)
 
-        printfn "Loaded %d records." (Seq.sumBy List.length _records.Values)
+        printfn "Loaded %d records." (_records.Values |> Seq.sumBy List.length)
 
     let LoadRecordsAsync () = async { LoadRecords() }
 

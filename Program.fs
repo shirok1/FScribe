@@ -3,6 +3,7 @@ open System.Threading
 open Mirai.Net.Sessions
 open Mirai.Net.Data.Messages.Receivers
 open Env
+open Util
 
 
 Scribe.Storage.LoadRecords()
@@ -20,10 +21,7 @@ printfn "Login to %s." bot.QQ
 
 
 bot.MessageReceived
-|> Observable.choose (fun m ->
-    match m with
-    | :? GroupMessageReceiver as gm -> Some(gm)
-    | _ -> None)
+|> Observable.choose tryParse<GroupMessageReceiver>
 |> Observable.subscribe (Scribe.handle bot)
 |> ignore
 
