@@ -131,7 +131,7 @@ let handle (bot: MiraiBot) (msg: GroupMessageReceiver) =
             Storage.AppendRecord msg.Id r
             printfn "Message: %s" r.Markdown
 
-        | Some q -> // atted bot in quote
+        | Some q -> // at bot in quote
             let all = Storage.AllRecords msg.Id
 
             let skipped =
