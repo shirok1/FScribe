@@ -1,18 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-  </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Util.fs" />
-    <Compile Include="Env.fs" />
-    <Compile Include="External.fs" />
-    <Compile Include="Scribe.fs" />
-    <Compile Include="Program.fs" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="dotenv.net" Version="3.1.1" />
-    <PackageReference Include="Mirai.Net" Version="2.3.9" />
-    <PackageReference Include="Octokit" Version="0.50.0" />
-  </ItemGroup>
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Util.fs" />
+        <Compile Include="Env.fs" />
+        <Compile Include="External.fs" />
+        <Compile Include="Scribe.fs" />
+        <Compile Include="Program.fs" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="dotenv.net" Version="3.1.1" />
+        <PackageReference Include="Mirai.Net" Version="2.4.0" />
+        <PackageReference Include="Octokit" Version="0.51.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
+    </ItemGroup>
 </Project>
