@@ -56,7 +56,7 @@ type ScribeRecord(msg: GroupMessageReceiver) =
              + (content
                 |> Seq.map (function
                     | :? PlainMessage as plain -> plain.Text
-                    | :? AtMessage as atm -> $"@{atm.Display}"
+                    | :? AtMessage as atm -> $"@{atm.Target}" // TODO: actual name instead of id
                     | :? FaceMessage as face -> $"[{face.Name}]"
                     | :? FileMessage as file -> $"[文件] {file.Name}"
                     | :? ForwardMessage as forward -> $"[{Seq.length forward.NodeList}条聊天记录]"
@@ -128,11 +128,11 @@ let handle (bot: MiraiBot) (msg: GroupMessageReceiver) =
     |> function
         | None ->
             let r = ScribeRecord(msg)
-            Storage.AppendRecord msg.Id r
+            Storage.AppendRecord msg.GroupId r
             printfn "Message: %s" r.Markdown
 
         | Some q -> // at bot in quote
-            let all = Storage.AllRecords msg.Id
+            let all = Storage.AllRecords msg.GroupId
 
             let skipped =
                 all
