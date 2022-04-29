@@ -92,6 +92,7 @@ module Storage =
         _records <-
             reader.ReadToEnd()
             |> JsonConvert.DeserializeObject<PlainRecordStorage>
+            |> function null -> dict [] | x -> x
             |> dictMap (Seq.cast >> Seq.toList)
 
         logInfo "Loaded %d records." (_records.Values |> Seq.sumBy List.length)
