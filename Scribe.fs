@@ -65,7 +65,7 @@ type ScribeRecord(msg: GroupMessageReceiver) =
                     | :? MusicShareMessage as music -> $"[{music.Title} - {music.Summary}]({music.MusicUrl})"
                     | :? QuoteMessage as quote -> $"|回复{quote.SenderId}| "
                     | :? SourceMessage -> ""
-                    | _ as x -> x.ToString())
+                    | x -> x.ToString())
                 |> String.concat ""))
 
     member x.Markdown = (x :> IScribeRecord).Markdown
@@ -127,7 +127,7 @@ let handle (bot: MiraiBot) (msg: GroupMessageReceiver) =
 
     |> function
         | None ->
-            let r = new ScribeRecord(msg)
+            let r = ScribeRecord(msg)
             Storage.AppendRecord msg.Id r
             printfn "Message: %s" r.Markdown
 

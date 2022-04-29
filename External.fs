@@ -4,9 +4,9 @@ open Octokit
 open Env
 
 
-let github = new GitHubClient(new ProductHeaderValue("fscribe"))
+let github = GitHubClient(ProductHeaderValue("fscribe"))
 
-github.Credentials <- new Credentials(GetEnv "GITHUB_TOKEN")
+github.Credentials <- Credentials(GetEnv "GITHUB_TOKEN")
 
 async {
     let! user = github.User.Current() |> Async.AwaitTask
@@ -20,7 +20,7 @@ let targetTag = GetEnv "SCRIBE_ISSUE_TAG"
 
 let CommentCollected content =
     async {
-        let filter = new RepositoryIssueRequest()
+        let filter = RepositoryIssueRequest()
         filter.Labels.Add targetTag
         filter.Filter <- IssueFilter.All
         filter.SortProperty <- IssueSort.Created
