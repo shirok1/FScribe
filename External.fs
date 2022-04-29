@@ -2,6 +2,7 @@ module External
 
 open Octokit
 open Env
+open Util
 
 
 let github = GitHubClient(ProductHeaderValue("fscribe"))
@@ -10,7 +11,7 @@ github.Credentials <- Credentials(GetEnv "GITHUB_TOKEN")
 
 async {
     let! user = github.User.Current() |> Async.AwaitTask
-    printfn "GitHub client login to %s." user.Name
+    logInfo "GitHub client login to %s." user.Name
 }
 |> Async.RunSynchronously
 
@@ -31,15 +32,15 @@ let CommentCollected content =
             |> Async.AwaitTask
 
         match issues |> Seq.tryHead with
-        | None -> printfn "No issue found."
+        | None -> logWarning "No issue tagged with %s found in %s/%s." targetTag targetOwner targetRepo
         | Some issue ->
-            printfn "Found issue named %s, creating comment." issue.Title
+            logInfo "Found issue named %s, creating comment." issue.Title
 
             let! comment =
                 github.Issue.Comment.Create(targetOwner, targetRepo, issue.Number, content)
                 |> Async.AwaitTask
 
-            printfn "Comment created at %s." comment.HtmlUrl
+            logInfo "Comment created at %s." comment.HtmlUrl
 
         return ()
     }

@@ -3,7 +3,16 @@ open System.Threading
 open Mirai.Net.Sessions
 open Mirai.Net.Data.Messages.Receivers
 open Env
+open Serilog
+open Serilog.Events
 open Util
+
+
+Log.Logger <-
+    LoggerConfiguration()
+        .MinimumLevel.Is(LogEventLevel.Verbose)
+        .WriteTo.Console()
+        .CreateLogger()
 
 
 Scribe.Storage.LoadRecords()
@@ -15,9 +24,9 @@ bot.QQ <- GetEnv "MIRAI_API_QQ"
 bot.Address <- GetEnv "MIRAI_API_ADDRESS"
 bot.VerifyKey <- GetEnv "MIRAI_API_KEY"
 
-printfn "Connecting to %s." bot.Address
+logInfo "Connecting to %s." bot.Address
 bot.LaunchAsync().Wait()
-printfn "Login to %s." bot.QQ
+logInfo "Login to %s." bot.QQ
 
 
 bot.MessageReceived
@@ -25,21 +34,25 @@ bot.MessageReceived
 |> Observable.subscribe (Scribe.handle bot)
 |> ignore
 
-printfn "Scribe is now observing."
+logInfo "Scribe is now observing."
 
 
 let exitEvent = new ManualResetEvent(false)
 
 AppDomain.CurrentDomain.ProcessExit.AddHandler (fun _ _ ->
+    logInfo "ProcessExiting..."
     Scribe.Storage.SaveRecords()
     exitEvent.Set() |> ignore)
 
 Console.CancelKeyPress.AddHandler (fun _ args ->
+    logInfo "Received Ctrl+C. Scribe is now exiting."
     args.Cancel <- true
     exitEvent.Set() |> ignore)
 
 exitEvent.WaitOne() |> ignore
 
 // Scribe.Storage.SaveRecords()
+
+Log.CloseAndFlush()
 
 exit 0

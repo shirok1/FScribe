@@ -84,7 +84,7 @@ module Storage =
     let mutable private _records: RecordStorage = dict []
 
     let LoadRecords () =
-        printfn "Loading records from %s." RecordPath
+        logInfo "Loading records from %s." RecordPath
 
         use file = File.Open(RecordPath, FileMode.OpenOrCreate)
         use reader = new StreamReader(file)
@@ -94,7 +94,7 @@ module Storage =
             |> JsonConvert.DeserializeObject<PlainRecordStorage>
             |> dictMap (Seq.cast >> Seq.toList)
 
-        printfn "Loaded %d records." (_records.Values |> Seq.sumBy List.length)
+        logInfo "Loaded %d records." (_records.Values |> Seq.sumBy List.length)
 
     let LoadRecordsAsync () = async { LoadRecords() }
 
@@ -106,7 +106,7 @@ module Storage =
 
         writer.Write(_records |> JsonConvert.SerializeObject)
 
-        printfn "Saved %d records." (_records.Values |> Seq.sumBy List.length)
+        logInfo "Saved %d records." (_records.Values |> Seq.sumBy List.length)
 
     let AppendRecord id record =
         let uintId = uint id
@@ -129,7 +129,7 @@ let handle (bot: MiraiBot) (msg: GroupMessageReceiver) =
         | None ->
             let r = ScribeRecord(msg)
             Storage.AppendRecord msg.GroupId r
-            printfn "Message: %s" r.Markdown
+            logVerbose "Message: %s" r.Markdown
 
         | Some q -> // at bot in quote
             let all = Storage.AllRecords msg.GroupId
@@ -141,15 +141,15 @@ let handle (bot: MiraiBot) (msg: GroupMessageReceiver) =
 
             let selectedRecords = if skipped.IsEmpty then all else skipped
 
-            printfn "----Quote-Start----"
-
+            logInfo "Selected %d records." (selectedRecords |> Seq.length)
+            
             let combined =
                 selectedRecords
                 |> Seq.map (fun r -> r.Markdown)
                 |> String.concat "\n"
 
-            printfn "%s" combined
-
-            printfn "----Quote-End----"
+            logDebug "----Quote-Start----"
+            logDebug "%s" combined
+            logDebug "----Quote-End----"
 
             External.CommentCollected combined |> Async.Start
