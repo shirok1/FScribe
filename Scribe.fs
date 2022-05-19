@@ -49,6 +49,7 @@ type ScribeRecord(msg: GroupMessageReceiver) =
 
     let lazyMarkdown =
         let cst = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time")
+
         let timeChina = TimeZoneInfo.ConvertTimeFromUtc(timestamp, cst)
 
         lazy
@@ -87,12 +88,15 @@ module Storage =
         logInfo "Loading records from %s." RecordPath
 
         use file = File.Open(RecordPath, FileMode.OpenOrCreate)
+
         use reader = new StreamReader(file)
 
         _records <-
             reader.ReadToEnd()
             |> JsonConvert.DeserializeObject<PlainRecordStorage>
-            |> function null -> dict [] | x -> x
+            |> function
+                | null -> dict []
+                | x -> x
             |> dictMap (Seq.cast >> Seq.toList)
 
         logInfo "Loaded %d records." (_records.Values |> Seq.sumBy List.length)
@@ -103,6 +107,7 @@ module Storage =
 
     let SaveRecords () =
         use file = File.Open(RecordPath, FileMode.OpenOrCreate)
+
         use writer = new StreamWriter(file)
 
         writer.Write(_records |> JsonConvert.SerializeObject)
@@ -119,38 +124,44 @@ module Storage =
 
 
 let handle (bot: MiraiBot) (msg: GroupMessageReceiver) =
-    msg.MessageChain
-    |> Seq.tryFind (function
-        | :? AtMessage as atm -> atm.Target = bot.QQ
-        | _ -> false) // if at bot
-    |> Option.map (fun _ -> msg.MessageChain)
-    |> Option.bind (Seq.choose tryParse<QuoteMessage> >> Seq.tryHead) // if quote
+    let isAtBot =
+        msg.MessageChain
+        |> Seq.exists (function
+            | :? AtMessage as atm -> atm.Target = bot.QQ
+            | _ -> false)
 
-    |> function
-        | None ->
-            let r = ScribeRecord(msg)
-            Storage.AppendRecord msg.GroupId r
-            logVerbose "Message: %s" r.Markdown
+    let maybeQuote =
+        msg.MessageChain
+        |> Seq.choose tryParse<QuoteMessage>
+        |> Seq.tryHead
 
-        | Some q -> // at bot in quote
-            let all = Storage.AllRecords msg.GroupId
 
-            let skipped =
-                all
-                |> Seq.skipWhile (fun r -> r.MsgId <> q.MessageId)
-                |> Seq.toList
+    match isAtBot, maybeQuote with
+    | true, None
+    | false, _ ->
+        let r = ScribeRecord(msg)
+        Storage.AppendRecord msg.GroupId r
+        logVerbose "Message: %s" r.Markdown
 
-            let selectedRecords = if skipped.IsEmpty then all else skipped
+    | true, Some q -> // at bot in quote
+        let all = Storage.AllRecords msg.GroupId
 
-            logInfo "Selected %d records." (selectedRecords |> Seq.length)
-            
-            let combined =
-                selectedRecords
-                |> Seq.map (fun r -> r.Markdown)
-                |> String.concat "\n"
+        let skipped =
+            all
+            |> Seq.skipWhile (fun r -> r.MsgId <> q.MessageId)
+            |> Seq.toList
 
-            logDebug "----Quote-Start----"
-            logDebug "%s" combined
-            logDebug "----Quote-End----"
+        let selectedRecords = if skipped.IsEmpty then all else skipped
 
-            External.CommentCollected combined |> Async.Start
+        logInfo "Selected %d records." (selectedRecords |> Seq.length)
+
+        let combined =
+            selectedRecords
+            |> Seq.map (fun r -> r.Markdown)
+            |> String.concat "\n"
+
+        logDebug "----Quote-Start----"
+        logDebug "%s" combined
+        logDebug "----Quote-End----"
+
+        External.CommentCollected combined |> Async.Start
