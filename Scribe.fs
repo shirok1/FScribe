@@ -48,9 +48,11 @@ type ScribeRecord(msg: GroupMessageReceiver) =
         |> Option.defaultWith timestamp.ToString
 
     let lazyMarkdown =
-        let cst = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time")
+        let cst =
+            TimeZoneInfo.FindSystemTimeZoneById("China Standard Time")
 
-        let timeChina = TimeZoneInfo.ConvertTimeFromUtc(timestamp, cst)
+        let timeChina =
+            TimeZoneInfo.ConvertTimeFromUtc(timestamp, cst)
 
         lazy
             ($"{senderName} ({timeChina}): "
@@ -70,7 +72,8 @@ type ScribeRecord(msg: GroupMessageReceiver) =
                     | x -> x.ToString())
                 |> String.concat ""))
 
-    member x.Markdown = (x :> IScribeRecord).Markdown
+    member x.Markdown =
+        (x :> IScribeRecord).Markdown
 
     interface IScribeRecord with
         member _.MsgId = msgId
@@ -83,12 +86,14 @@ module Storage =
     type RecordStorage = IDictionary<uint, list<IScribeRecord>>
     type PlainRecordStorage = IDictionary<uint, seq<PlainScribeRecord>>
 
-    let mutable private _records: RecordStorage = dict []
+    let mutable private _records: RecordStorage =
+        dict []
 
     let LoadRecords () =
         logInfo "Loading records from %s." RecordPath
 
-        use file = File.Open(RecordPath, FileMode.OpenOrCreate)
+        use file =
+            File.Open(RecordPath, FileMode.OpenOrCreate)
 
         use reader = new StreamReader(file)
 
@@ -107,7 +112,8 @@ module Storage =
     let AllRecords id : seq<IScribeRecord> = _records[uint id]
 
     let SaveRecords () =
-        use file = File.Open(RecordPath, FileMode.OpenOrCreate)
+        use file =
+            File.Open(RecordPath, FileMode.OpenOrCreate)
 
         use writer = new StreamWriter(file)
 
@@ -152,7 +158,8 @@ let handle (bot: MiraiBot) (msg: GroupMessageReceiver) =
             |> Seq.skipWhile (fun r -> r.MsgId <> q.MessageId)
             |> Seq.toList
 
-        let selectedRecords = if skipped.IsEmpty then all else skipped
+        let selectedRecords =
+            if skipped.IsEmpty then all else skipped
 
         logInfo "Selected %d records." (selectedRecords |> Seq.length)
 
