@@ -129,8 +129,10 @@ module Storage =
         else
             _records.Add(uintId, [ record ])
 
+type MessageCollectContext = { TimeLimit: DateTime; Caller: string }
 
-let handle (bot: MiraiBot) (msg: GroupMessageReceiver) =
+
+let handle (bot: MiraiBot) (col_ctx: MessageCollectContext option) (msg: GroupMessageReceiver) =
     let isAtBot =
         msg.MessageChain
         |> Seq.exists (function
@@ -171,3 +173,5 @@ let handle (bot: MiraiBot) (msg: GroupMessageReceiver) =
         logDebug "----Quote-End----"
 
         External.CommentCollected combined |> Async.Start
+
+    None

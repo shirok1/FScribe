@@ -1,5 +1,6 @@
 open System
 open System.Threading
+open FSharp.Control.Reactive
 open Mirai.Net.Sessions
 open Mirai.Net.Data.Messages.Receivers
 open Env
@@ -31,7 +32,7 @@ logInfo "Login to %s." bot.QQ
 
 bot.MessageReceived
 |> Observable.choose tryParse<GroupMessageReceiver>
-|> Observable.subscribe (Scribe.handle bot)
+|> Observable.fold (Scribe.handle bot) None
 |> ignore
 
 logInfo "Scribe is now observing."
