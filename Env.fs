@@ -1,4 +1,4 @@
-module Env
+module FScribe.Env
 
 open System
 open System.Collections

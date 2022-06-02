@@ -4,21 +4,31 @@
         <TargetFramework>net6.0</TargetFramework>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="Util.fs" />
-        <Compile Include="Env.fs" />
-        <Compile Include="External.fs" />
-        <Compile Include="Scribe.fs" />
-        <Compile Include="Program.fs" />
+        <Compile Include="Util.fs"/>
+        <Compile Include="Env.fs"/>
+        <Compile Include="External.fs"/>
+        <Compile Include="Msg.fs"/>
+        <Compile Include="Scribe.fs"/>
+        <Compile Include="Storage.fs"/>
+        <Compile Include="Program.fs"/>
+        <Content Include="Containerfile"/>
+        <Content Include=".env"/>
+        <Content Include="GitVersion.yml"/>
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Destructurama.FSharp" Version="1.2.0" />
-        <PackageReference Include="dotenv.net" Version="3.1.1" />
-        <PackageReference Include="FSharp.Control.Reactive" Version="5.0.5" />
-        <PackageReference Include="Microsoft.NETCore.Platforms" Version="6.0.3" />
-        <PackageReference Include="Mirai.Net" Version="2.4.2" />
-        <PackageReference Include="Octokit" Version="0.51.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
-        <PackageReference Include="System.Reactive" Version="5.0.0" />
-        <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
+        <PackageReference Include="Destructurama.FSharp" Version="1.2.0"/>
+        <PackageReference Include="dotenv.net" Version="3.1.1"/>
+        <PackageReference Include="FSharp.Control.Reactive" Version="5.0.5"/>
+        <PackageReference Include="FSharpPlus" Version="1.2.4"/>
+        <PackageReference Include="GitVersion.MsBuild" Version="5.10.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.NETCore.Platforms" Version="6.0.3"/>
+        <PackageReference Include="Mirai.Net" Version="2.4.2"/>
+        <PackageReference Include="Octokit" Version="0.51.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1"/>
+        <PackageReference Include="System.Reactive" Version="5.0.0"/>
+        <PackageReference Include="System.Threading.Channels" Version="6.0.0"/>
     </ItemGroup>
 </Project>

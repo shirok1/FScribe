@@ -1,4 +1,4 @@
-module Util
+module FScribe.Util
 
 open System.Collections.Generic
 open Serilog

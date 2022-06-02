@@ -1,8 +1,8 @@
-module External
+module FScribe.External
 
 open Octokit
-open Env
-open Util
+open FScribe.Env
+open FScribe.Util
 
 
 let github =
@@ -20,7 +20,7 @@ let targetOwner = GetEnv "SCRIBE_REPO_OWNER"
 let targetRepo = GetEnv "SCRIBE_REPO_NAME"
 let targetTag = GetEnv "SCRIBE_ISSUE_TAG"
 
-let CommentCollected content_seq =
+let commentCollected content_seq =
     async {
         let filter = RepositoryIssueRequest()
         filter.Labels.Add targetTag
