@@ -25,7 +25,7 @@ bot.QQ <- GetEnv "MIRAI_API_QQ"
 bot.Address <- GetEnv "MIRAI_API_ADDRESS"
 bot.VerifyKey <- GetEnv "MIRAI_API_KEY"
 
-logInfo "Connecting to %s." bot.Address
+logInfo "Connecting to %s." (bot.Address |> string)
 bot.LaunchAsync().Wait()
 logInfo "Login to %s." bot.QQ
 
