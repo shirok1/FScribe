@@ -33,6 +33,7 @@ logInfo "Login to %s." bot.QQ
 bot.MessageReceived
 |> Observable.choose tryParse<GroupMessageReceiver>
 |> Observable.fold (Scribe.handle bot) None
+|> Observable.subscribe ignore
 |> ignore
 
 logInfo "Scribe is now observing."
