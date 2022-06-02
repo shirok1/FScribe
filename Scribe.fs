@@ -156,12 +156,10 @@ let handle (bot: MiraiBot) (msg: GroupMessageReceiver) =
         logInfo "Selected %d records." (selectedRecords |> Seq.length)
 
         let combined =
-            selectedRecords
-            |> Seq.map (fun r -> r.Markdown)
-            |> String.concat "\n"
+            selectedRecords |> Seq.map (fun r -> r.Markdown)
 
         logDebug "----Quote-Start----"
-        logDebug "%s" combined
+        logDebug "%s" (string combined)
         logDebug "----Quote-End----"
 
         External.CommentCollected combined |> Async.Start

@@ -5,7 +5,8 @@ open Env
 open Util
 
 
-let github = GitHubClient(ProductHeaderValue("fscribe"))
+let github =
+    GitHubClient(ProductHeaderValue("fscribe"))
 
 github.Credentials <- Credentials(GetEnv "GITHUB_TOKEN")
 
@@ -19,7 +20,7 @@ let targetOwner = GetEnv "SCRIBE_REPO_OWNER"
 let targetRepo = GetEnv "SCRIBE_REPO_NAME"
 let targetTag = GetEnv "SCRIBE_ISSUE_TAG"
 
-let CommentCollected content =
+let CommentCollected content_seq =
     async {
         let filter = RepositoryIssueRequest()
         filter.Labels.Add targetTag
@@ -36,8 +37,16 @@ let CommentCollected content =
         | Some issue ->
             logInfo "Found issue named %s, creating comment." issue.Title
 
+            let comment =
+                if Seq.length content_seq <= 10 then
+                    String.concat "\n\n" content_seq
+                else
+                    "<details>\n<summary>一段挺长的群聊</summary>\n\n"
+                    + String.concat "\n\n" content_seq
+                    + "\n</details>\n"
+
             let! comment =
-                github.Issue.Comment.Create(targetOwner, targetRepo, issue.Number, content)
+                github.Issue.Comment.Create(targetOwner, targetRepo, issue.Number, comment)
                 |> Async.AwaitTask
 
             logInfo "Comment created at %s." comment.HtmlUrl
