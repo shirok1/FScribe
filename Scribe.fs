@@ -58,6 +58,7 @@ type ScribeRecord(msg: GroupMessageReceiver) =
                 |> Seq.map (function
                     | :? PlainMessage as plain -> plain.Text
                     | :? AtMessage as atm -> $"@{atm.Target}" // TODO: actual name instead of id
+                    | :? AppMessage as app -> $"{app.Content}"
                     | :? FaceMessage as face -> $"[{face.Name}]"
                     | :? FileMessage as file -> $"[文件] {file.Name}"
                     | :? ForwardMessage as forward -> $"[{Seq.length forward.NodeList}条聊天记录]"
